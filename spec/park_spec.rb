@@ -32,4 +32,13 @@ describe Park do
       expect(burnside_old).to eq burnside_new
     end
   end
+
+  describe "update" do
+    it "updates the name of the park in the database" do
+      burnside = Park.new({name: "Burnside"})
+      burnside.save
+      burnside.update("Under the Bridge")
+      expect(Park.all[0].name).to eq "Under the Bridge"
+    end
+  end
 end

@@ -21,6 +21,10 @@ class Park
     @id = result.first['id'].to_i
   end
 
+  def update(new_name)
+    DB.exec("UPDATE parks SET name = '#{new_name}' WHERE id = #{self.id};")
+  end
+
   def ==(another_park)
     self.name == another_park.name
   end
