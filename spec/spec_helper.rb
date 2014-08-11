@@ -5,7 +5,7 @@ require 'city'
 require 'feature'
 require 'park'
 
-DB = PG.connect({:dbname => 'skateparks_test'})
+DB = PG.connect({dbname: 'skateparks_test'})
 
 RSpec.configure do |config|
   config.before(:each) do
