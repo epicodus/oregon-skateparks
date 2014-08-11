@@ -16,6 +16,11 @@ class Park
     parks
   end
 
+  def self.find(park_id)
+    result = DB.exec("SELECT * FROM parks WHERE id = #{park_id};").first
+    Park.new({id: result['id'].to_i, name: result['name']})
+  end
+
   def save
     result = DB.exec("INSERT INTO parks (name) VALUES ('#{self.name}') RETURNING id;")
     @id = result.first['id'].to_i

@@ -1,5 +1,6 @@
 require 'pg'
 require 'rspec'
+require 'pry'
 
 require 'city'
 require 'feature'

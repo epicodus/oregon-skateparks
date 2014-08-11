@@ -52,4 +52,14 @@ describe Park do
       expect(Park.all).to eq [newberg]
     end
   end
+
+  describe ".find" do
+    it "returns a park object given the park's id from the database" do
+      burnside = Park.new({name: "Burnside"})
+      burnside.save
+      newberg = Park.new({name: "Newberg"})
+      newberg.save
+      expect(Park.find(newberg.id)).to eq newberg
+    end
+  end
 end
