@@ -41,4 +41,15 @@ describe Park do
       expect(Park.all[0].name).to eq "Under the Bridge"
     end
   end
+
+  describe "delete" do
+    it "deletes the park from the database" do
+      burnside = Park.new({name: "Burnside"})
+      burnside.save
+      newberg = Park.new({name: "Newberg"})
+      newberg.save
+      burnside.delete
+      expect(Park.all).to eq [newberg]
+    end
+  end
 end

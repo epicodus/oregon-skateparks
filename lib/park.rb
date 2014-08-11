@@ -25,6 +25,10 @@ class Park
     DB.exec("UPDATE parks SET name = '#{new_name}' WHERE id = #{self.id};")
   end
 
+  def delete
+    DB.exec("DELETE FROM parks WHERE id = #{self.id};")
+  end
+
   def ==(another_park)
     self.name == another_park.name
   end
