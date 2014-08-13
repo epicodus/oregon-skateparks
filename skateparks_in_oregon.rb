@@ -37,18 +37,21 @@ def admin_menu
   puts "HESSIANS"
   puts "========"
   if City.all == [] and Park.all == []
-    new_park
+    add_park
   else
+    puts "L > List all skateparks"
     puts "S > Add a skatepark"
     puts "F > Add a feature to a skatepark"
     ws
     puts "M > Return to main menu"
   end
   case gets.chomp.upcase
+  when 'L'
+    list_parks
   when 'S'
     add_park
   when 'F'
-    add_feature
+    assign_feature
   when 'M'
     menu
   else
@@ -66,7 +69,8 @@ def add_park
   else
     city = City.find(input)
     puts "Enter the name of the park:"
-    new_park = Park.new(name: gets.chomp, city_id: city.id)
+    binding.pry
+    new_park = Park.new({name: gets.chomp, city_id: city.id})
     new_park.save
     puts "#{new_park.name} in #{city.name} added!"
     sleep 1
@@ -93,11 +97,11 @@ def assign_feature
       list_parks
       puts "Enter a park number to assign #{feature.name} to:"
       park = Park.find(gets.chomp)
-      park.update
-      new_park.save
-      puts "#{new_park.name} in #{city.name} added!"
+      park.assign_feature(feature)
+      puts "Assigned #{park.feature.last.name} #{park.name}!"
       sleep 1
       admin_menu
+    end
   end
 end
 
@@ -111,16 +115,6 @@ def add_feature
   admin_menu
 end
 
-def list_cities
-  puts "Cities:"
-  City.all.each_with_index {|city,index| puts "#{index + 1}. #{city.name}"}
-end
-
-def list_features
-  puts "Features:"
-  Feature.all.each_with_index {|feature,index| "#{index + 1}. #{feature.name}"}
-end
-
 def add_city
   list_cities
   puts "Enter a new city to add it to the list:"
@@ -129,6 +123,21 @@ def add_city
   puts "#{new_city.name} added!"
   sleep 1
   admin_menu
+end
+
+def list_cities
+  puts "Cities:"
+  City.all.each {|city| puts "#{city.id}. #{city.name}"}
+end
+
+def list_features
+  puts "Features:"
+  Feature.all.each_with_index {|feature,index| "#{index + 1}. #{feature.name}"}
+end
+
+def list_parks
+  puts "Parks"
+  Park.all.each {|park| puts "#{park.id}. #{park.name}"}
 end
 
 def ws

@@ -2,11 +2,12 @@ require 'pg'
 
 class Park
 
-  attr_accessor :name, :id
+  attr_accessor :name, :id, :city_id
 
   def initialize(attributes)
     @name = attributes[:name]
     @id = attributes[:id]
+    @city_id = attributes[:city_id]
   end
 
   def self.all
@@ -22,7 +23,7 @@ class Park
   end
 
   def save
-    result = DB.exec("INSERT INTO parks (name) VALUES ('#{self.name}') RETURNING id;")
+    result = DB.exec("INSERT INTO parks (name, city_id) VALUES ('#{self.name}', #{self.city_id}) RETURNING id;")
     @id = result.first['id'].to_i
   end
 
