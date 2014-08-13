@@ -13,7 +13,7 @@ RSpec.configure do |config|
     DB.exec("DELETE FROM cities *;")
     DB.exec("DELETE FROM features *;")
     DB.exec("DELETE FROM parks *;")
-    DB.exec("DELETE FROM parks_features *;")
+    DB.exec("DELETE FROM features_parks *;")
   end
 end
 

@@ -62,4 +62,29 @@ describe Park do
       expect(Park.find(newberg.id)).to eq newberg
     end
   end
+
+  describe "assign_feature" do
+    it "assigns a feature to the park" do
+      burnside = Park.new({name: "Burnside"})
+      burnside.save
+      bowls = Feature.new({name: "Bowls"})
+      bowls.save
+      burnside.assign_feature(bowls)
+      expect(burnside.features).to eq [bowls]
+    end
+  end
+
+  describe "features" do
+    it "returns the features of a given park" do
+      burnside = Park.new({name: "Burnside"})
+      burnside.save
+      bowls = Feature.new({name: "Bowls"})
+      bowls.save
+      stairs = Feature.new({name: "Stairs"})
+      stairs.save
+      burnside.assign_feature(bowls)
+      burnside.assign_feature(stairs)
+      expect(burnside.features).to eq [bowls, stairs]
+    end
+  end
 end
