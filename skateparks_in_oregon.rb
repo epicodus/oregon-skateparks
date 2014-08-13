@@ -7,14 +7,10 @@ require './lib/park'
 
 DB = PG.connect({dbname: 'skateparks'})
 
-def welcome
+def menu
   system("clear")
   puts "OREGON SKATEPARKS"
   puts "================="
-  menu
-end
-
-def menu
   input = nil
   until input == 'X'
     puts "Press 'H' if you're a hessian."
@@ -23,6 +19,7 @@ def menu
     puts "Press 'X' to exit."
     case gets.chomp.upcase
     when 'H'
+      system("clear")
       admin_menu
     when 'S'
       user_menu
@@ -47,7 +44,8 @@ def admin_menu
   end
   case gets.chomp.upcase
   when 'L'
-    list_parks
+    detail_view
+    admin_menu
   when 'S'
     add_park
   when 'F'
@@ -59,7 +57,36 @@ def admin_menu
   end
 end
 
+def user_menu
+  system("clear")
+  puts "SHREDDERS"
+  puts "========="
+
+  puts "L > List all skateparks"
+  puts "C > List skateparks by city"
+  puts "F > List skateparks by feature"
+  ws
+  puts "M > Return to main menu"
+
+  case gets.chomp.upcase
+  when 'L'
+    detail_view
+    user_menu
+  when 'C'
+    parks_by_city
+    user_menu
+  when 'F'
+    parks_by_feature
+    user_menu
+  when 'M'
+    menu
+  else
+    puts "Bummer input, dude. Try again."
+  end
+end
+
 def add_park
+  system("clear")
   list_cities
   puts "Enter a city number from the list or press 'C' to add a new city:"
   input = gets.chomp
@@ -68,8 +95,7 @@ def add_park
     add_city
   else
     city = City.find(input)
-    puts "Enter the name of the park:"
-    binding.pry
+    puts "Enter the name of the park to add to #{city.name}:"
     new_park = Park.new({name: gets.chomp, city_id: city.id})
     new_park.save
     puts "#{new_park.name} in #{city.name} added!"
@@ -86,6 +112,7 @@ def assign_feature
   when 'P'
     add_park
   else
+    current_park = Park.find(input)
     list_features
     puts "Enter a feature number from the list or press 'F' to add a new feature:"
     input = gets.chomp
@@ -95,10 +122,8 @@ def assign_feature
     else
       feature = Feature.find(input)
       list_parks
-      puts "Enter a park number to assign #{feature.name} to:"
-      park = Park.find(gets.chomp)
-      park.assign_feature(feature)
-      puts "Assigned #{park.feature.last.name} #{park.name}!"
+      current_park.assign_feature(feature)
+      puts "Assigned #{current_park.features.last.name} #{current_park.name}!"
       sleep 1
       admin_menu
     end
@@ -111,16 +136,19 @@ def add_feature
   new_feature = Feature.new(name: gets.chomp)
   new_feature.save
   puts "#{new_feature.name} added!"
+  ws
   sleep 1
   admin_menu
 end
 
 def add_city
+  system("clear")
   list_cities
   puts "Enter a new city to add it to the list:"
   new_city = City.new(name: gets.chomp)
   new_city.save
   puts "#{new_city.name} added!"
+  ws
   sleep 1
   admin_menu
 end
@@ -128,20 +156,77 @@ end
 def list_cities
   puts "Cities:"
   City.all.each {|city| puts "#{city.id}. #{city.name}"}
+  ws
 end
 
 def list_features
   puts "Features:"
-  Feature.all.each_with_index {|feature,index| "#{index + 1}. #{feature.name}"}
+  Feature.all.each {|feature| puts "#{feature.id}. #{feature.name}"}
+  ws
 end
 
 def list_parks
   puts "Parks"
   Park.all.each {|park| puts "#{park.id}. #{park.name}"}
+  ws
+end
+
+def parks_by_city
+  puts "Enter a city's number to view its skateparks:"
+  list_cities
+  city = gets.chomp
+  parks = Park.find_by_city(city)
+  city_name = City.find(city).name
+  system("clear")
+  puts city_name.upcase
+  puts "="*city_name.length
+  puts "Parks"
+  puts "-----"
+  parks.each {|park| puts "  --#{park.name}"}
+  continue
+end
+
+def parks_by_feature
+  puts "Enter a feature's number to view its skateparks:"
+  list_features
+  feature = gets.chomp
+  features = Park.find_by_feature(feature)
+  feature_name = Feature.find(feature).name
+  system("clear")
+  puts feature_name.upcase
+  puts "="*feature_name.length
+  puts "Parks"
+  puts "-----"
+  features.each {|feature| puts "  --#{feature.name}"}
+  continue
+end
+
+def detail_view
+  system("clear")
+  puts "PARKS"
+  puts "====="
+  Park.all.each do |park|
+    puts "#{park.name}"
+    puts "-"*park.name.length
+    city = City.find(park.city_id)
+    puts "Location: #{city.name}"
+    puts "Features:"
+    park.features.each do |feature|
+      puts "  --#{feature.name}"
+    end
+    ws
+  end
+  continue
 end
 
 def ws
   puts "\n"
 end
 
-welcome
+def continue
+  ws
+  puts "Press any key to continue"
+  gets.chomp
+end
+
+menu

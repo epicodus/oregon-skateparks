@@ -13,13 +13,33 @@ class Park
   def self.all
     parks = []
     results = DB.exec("SELECT * FROM parks;")
-    results.each { |result| attributes = {id: result['id'].to_i, name: result['name']}; parks << Park.new(attributes) }
+    results.each { |result| attributes = {id: result['id'].to_i, name: result['name'], city_id: result['city_id'].to_i}; parks << Park.new(attributes) }
     parks
   end
 
   def self.find(park_id)
     result = DB.exec("SELECT * FROM parks WHERE id = #{park_id};").first
     Park.new({id: result['id'].to_i, name: result['name']})
+  end
+
+  def self.find_by_city(city_id)
+    parks = []
+    results = DB.exec("SELECT * FROM parks WHERE city_id = #{city_id};")
+    results.each do |result|
+      attributes = {id: result['id'].to_i, name: result['name'], city_id: result['city_id'].to_i}
+      parks << Park.new(attributes)
+    end
+    parks
+  end
+
+  def self.find_by_feature(feature_id)
+    parks = []
+    results = DB.exec("SELECT parks.* FROM features JOIN features_parks ON (features.id = features_parks.feature_id) JOIN parks ON (features_parks.park_id = parks.id) WHERE features.id = #{feature_id};")
+    results.each do |result|
+      attributes = {id: result['id'].to_i, name: result['name'], city_id: result['city_id'].to_i}
+      parks << Park.new(attributes)
+    end
+    parks
   end
 
   def save
